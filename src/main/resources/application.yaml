@@ -1,1 +1,45 @@
+spring.profiles.active: dev
+spring:
+  application:
+    name: crbets-portal-api
+  dataSource:
+    url: "jdbc:mysql://localhost:3306/crbet_admin?useTimezone=true&serverTimezone=America/Sao_Paulo"
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+server:
+  port: 8280
+  servlet:
+    context-path: /crbets
+
+betfair:
+  api:
+    aping_url: https://api.betfair.com/exchange/betting
+    rest_suffix: /rest/v1.0/
+    timeout: 10000
+    
+---
+spring:
+  profiles: dev
+  dataSource:
+    url: "jdbc:mysql://gamasetdb.cjghoaa1m0um.us-east-1.rds.amazonaws.com:3306/crbet_admin_dev?useTimezone=true&serverTimezone=America/Sao_Paulo"
+    username: gamasetdb
+    password: '#gamasetdb2019'
+
+---
+server:
+  port: 8280
+spring:
+  profiles: prod
+  dataSource:
+    url: "jdbc:mysql://gamasetdb.cjghoaa1m0um.us-east-1.rds.amazonaws.com:3306/crbet_admin_prod?useTimezone=true&serverTimezone=America/Sao_Paulo"
+    username: gamasetdb
+    password: '#gamasetdb2019'
 

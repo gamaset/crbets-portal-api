@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CrbetportalApplication {
+public class CrbetPortalApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CrbetportalApplication.class, args);
+		SpringApplication.run(CrbetPortalApplication.class, args);
 	}
 
 }
