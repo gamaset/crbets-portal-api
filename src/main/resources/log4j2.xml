@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" strict="true" monitorInterval="60">
+    <Properties>
+        <!-- Layout http://logging.apache.org/log4j/2.x/manual/layouts.html -->
+        <Property name="LOG_PATTERN">[%d{DEFAULT}] - [%5p] %c --- %m%n</Property>
+        <Property name="BASE_PATH">logs/crbets-admin-api</Property>
+        <Property name="ROLLING_PATTERN">-%d{dd}.log.gz</Property>
+    </Properties>
+
+    <!-- Appenders: http://logging.apache.org/log4j/2.x/manual/appenders.html -->
+    <Appenders>
+        <Console name="CONSOLE">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <RollingFile name="APPLICATION" fileName="${BASE_PATH}/app.log" filePattern="${BASE_PATH}/app${ROLLING_PATTERN}">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="APPLICATION"/>
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>

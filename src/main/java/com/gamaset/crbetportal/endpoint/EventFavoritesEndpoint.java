@@ -11,26 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gamaset.crbetportal.business.EventBusiness;
 import com.gamaset.crbetportal.schema.response.CompetitionEventsResponse;
+import com.gamaset.crbetportal.schema.response.GenericResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping(value = "/api/v1/event-types/{eventTypeId}/competitions/{competitionId}/events")
-public class EventEndpoint {
+@RequestMapping(value = "/api/v1/event-types/{eventTypeId}/events")
+public class EventFavoritesEndpoint {
 
 	@Autowired
 	private EventBusiness eventBusiness;
 	
 
 	@GetMapping(produces = APPLICATION_JSON_UTF8_VALUE)
-	public CompetitionEventsResponse list(@PathVariable("eventTypeId") Long eventTypeId, 
-			@PathVariable("competitionId") Long competitionId) {
-		return eventBusiness.listByEventTypeAndCompetitionId(eventTypeId, competitionId);
-	}
-
-	@GetMapping(value = "/{eventId}", produces = APPLICATION_JSON_UTF8_VALUE)
-	public CompetitionEventsResponse getByEventId(@PathVariable("eventTypeId") Long eventTypeId, 
-			@PathVariable("competitionId") Long competitionId, @PathVariable("eventId") Long eventId) {
-		return eventBusiness.getByEventId(eventTypeId, competitionId, eventId);
+	public GenericResponse<CompetitionEventsResponse> list(@PathVariable("eventTypeId") Long eventTypeId) {
+		return new GenericResponse<CompetitionEventsResponse>(eventBusiness.listFavoritesByEventType(eventTypeId));
 	}
 
 }

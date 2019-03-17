@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gamaset.crbetportal.business.CompetitionBusiness;
@@ -24,9 +23,8 @@ public class CompetitionEndpoint {
 	
 
 	@GetMapping(produces = APPLICATION_JSON_UTF8_VALUE)
-	public GenericResponse<CompetitionSchema> list(@PathVariable("eventTypeId") Long eventTypeId, 
-			@RequestParam(value = "favorites", defaultValue = "true") boolean favorites) {
-		return new GenericResponse<CompetitionSchema>(competitionBusiness.list(eventTypeId, favorites));
+	public GenericResponse<CompetitionSchema> list(@PathVariable("eventTypeId") Long eventTypeId) {
+		return new GenericResponse<CompetitionSchema>(competitionBusiness.list(eventTypeId, null));
 	}
 	
 

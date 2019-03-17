@@ -35,7 +35,7 @@ public class EventTypeService implements ApiNgOperations {
 	@Autowired
 	private ApiNgSender sender;
 
-	public List<EventTypeResult> listEventTypes(MarketFilter marketFilter, String appKey, String ssoToken) {
+	public List<EventTypeResult> listEventTypesApiNg(MarketFilter marketFilter, String appKey, String ssoToken) {
 
 		List<EventTypeResult> eventTypes = new ArrayList<>();
 

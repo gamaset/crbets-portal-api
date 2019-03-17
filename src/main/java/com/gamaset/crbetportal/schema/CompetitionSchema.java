@@ -1,5 +1,6 @@
 package com.gamaset.crbetportal.schema;
 
+import com.gamaset.crbetportal.integration.betfair.aping.entities.CompetitionResult;
 import com.gamaset.crbetportal.repository.entity.CompetitionModel;
 import com.gamaset.crbetportal.repository.entity.EventTypeModel;
 
@@ -21,6 +22,14 @@ public class CompetitionSchema {
 		setEventType(model.getEventType());
 		setActive(model.isActive());
 		
+	}
+
+	public CompetitionSchema(CompetitionResult c, EventTypeModel eventType) {
+		setId(Long.valueOf(c.getCompetition().getId()));
+		setDescription(c.getCompetition().getName());
+		setCountryCode(c.getCompetitionRegion());
+		setEventType(eventType);
+		setActive(true);
 	}
 
 	public Long getId() {
