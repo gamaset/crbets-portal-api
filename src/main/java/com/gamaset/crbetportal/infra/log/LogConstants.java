@@ -62,9 +62,9 @@ public class LogConstants {
 	/**
 	 * CACHE
 	 */
-//	public static final String REDIS_DOWN = "REDIS DOWN";
-//	public static final String REDIS_UP = "REDIS UP";
-//	public static final String CACHE_SERIALIZATION = "Cache Serialization";
+	public static final String REDIS_DOWN = "REDIS DOWN";
+	public static final String REDIS_UP = "REDIS UP";
+	public static final String CACHE_SERIALIZATION = "Cache Serialization";
 
 	/**
 	 * Class

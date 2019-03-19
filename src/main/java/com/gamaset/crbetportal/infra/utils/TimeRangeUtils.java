@@ -5,11 +5,24 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.gamaset.crbetportal.endpoint.PeriodFilter;
 import com.gamaset.crbetportal.integration.betfair.aping.entities.TimeRange;
 
 public class TimeRangeUtils {
 	
 	private static final ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
+	
+	public static TimeRange getByPeriod(PeriodFilter period) {
+		TimeRange timeRange = null;
+		if (period.equals(PeriodFilter.TOMORROW)) {
+			timeRange = TimeRangeUtils.getTomorrow();
+		}else if(period.equals(PeriodFilter.NEXT_3_DAYS)) {
+			timeRange = TimeRangeUtils.getTimeRangeDefault();
+		}else {
+			timeRange = TimeRangeUtils.getToday();
+		}
+		return timeRange;
+	}
 	
 	public static TimeRange getTimeRangeDefault() {
 		TimeRange timeRange = new TimeRange();
@@ -31,6 +44,16 @@ public class TimeRangeUtils {
 		}else {
 			timeRange.setTo(Date.from(getFinalTodayInstant()));
 		}
+		
+		return timeRange;
+	}
+
+	public static TimeRange getTomorrow() {
+		Instant from = Instant.now().atZone(zoneId).toInstant();
+		
+		TimeRange timeRange = new TimeRange();
+		timeRange.setFrom(Date.from(from));
+		timeRange.setTo(Date.from(getFinalTomorrowInstant()));
 		
 		return timeRange;
 	}

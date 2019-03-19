@@ -1,5 +1,6 @@
 package com.gamaset.crbetportal.schema.response;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +14,9 @@ import com.gamaset.crbetportal.schema.EventSchema;
 import com.gamaset.crbetportal.schema.MarketSchema;
 import com.gamaset.crbetportal.schema.PriceMarketSchema;
 
-public class CompetitionEventsResponse {
+public class CompetitionEventsResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private CompetitionSchema competition;
 	private List<EventSchema> events;
@@ -37,18 +40,19 @@ public class CompetitionEventsResponse {
 			}
 		}
 	}
-	
+
 	public void buildEventMarketPrices(List<MarketBook> listMarketBook) {
 		if (Objects.nonNull(getEvents()) && Objects.nonNull(listMarketBook)) {
 			for (EventSchema event : getEvents()) {
 				for (MarketSchema marketSchema : event.getMarkets()) {
 					for (MarketBook marketBook : listMarketBook) {
-						if(marketSchema.getMarketId().equalsIgnoreCase(marketBook.getMarketId())) {
+						if (marketSchema.getMarketId().equalsIgnoreCase(marketBook.getMarketId())) {
 							for (PriceMarketSchema priceMarketSchema : marketSchema.getPrices()) {
 								for (Runner runner : marketBook.getRunners()) {
-									if(runner.getSelectionId().equals(priceMarketSchema.getSelectionId())) {
-										Optional<PriceSize> priceOpt = runner.getEx().getAvailableToBack().stream().findFirst();
-										if(priceOpt.isPresent()) {
+									if (runner.getSelectionId().equals(priceMarketSchema.getSelectionId())) {
+										Optional<PriceSize> priceOpt = runner.getEx().getAvailableToBack().stream()
+												.findFirst();
+										if (priceOpt.isPresent()) {
 											priceMarketSchema.setOdd(priceOpt.get().getPrice());
 											break;
 										}
@@ -77,6 +81,5 @@ public class CompetitionEventsResponse {
 	public void setEvents(List<EventSchema> events) {
 		this.events = events;
 	}
-
 
 }

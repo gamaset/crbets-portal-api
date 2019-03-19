@@ -1,5 +1,6 @@
 package com.gamaset.crbetportal.schema;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +8,10 @@ import com.gamaset.crbetportal.integration.betfair.aping.entities.MarketCatalogu
 import com.gamaset.crbetportal.integration.betfair.aping.entities.Runner;
 import com.gamaset.crbetportal.integration.betfair.aping.entities.RunnerCatalog;
 
-public class MarketSchema {
+public class MarketSchema implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String marketId;
 	private String marketName;
 	private List<PriceMarketSchema> prices;
@@ -23,22 +26,22 @@ public class MarketSchema {
 		for (Runner runner : runners) {
 			for (MarketCatalogue mc : listMarketCatalogue) {
 				if (mc.getMarketId().equals(marketId)) {
-					
+
 					for (RunnerCatalog rn : mc.getRunners()) {
 						if (runner.getSelectionId().equals(rn.getSelectionId())) {
 							PriceMarketSchema pm = new PriceMarketSchema();
-							if(runner.getEx().getAvailableToBack().size() > 0) {
+							if (runner.getEx().getAvailableToBack().size() > 0) {
 								pm.setOdd(runner.getEx().getAvailableToBack()
-									.get(runner.getEx().getAvailableToBack().size() - 1).getPrice());
+										.get(runner.getEx().getAvailableToBack().size() - 1).getPrice());
 							}
 							pm.setSelectionId(rn.getSelectionId());
 							pm.setSelectionName(rn.getRunnerName());
 							this.prices.add(pm);
 						}
-						
+
 					}
 				}
-			}		
+			}
 		}
 		return this;
 	}

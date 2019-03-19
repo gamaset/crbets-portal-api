@@ -8,22 +8,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gamaset.crbetportal.business.EventTypeBusiness;
-import com.gamaset.crbetportal.integration.betfair.aping.entities.EventTypeResult;
+import com.gamaset.crbetportal.business.PortalBuilderBusiness;
+import com.gamaset.crbetportal.schema.SidebarSchema;
 import com.gamaset.crbetportal.schema.response.GenericResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping(value = "/api/v1/event-types")
-public class EventTypeEndpoint {
-
+@RequestMapping(value = "/api/v1/portal/shared")
+public class SidebarEndpoint {
+	
 	@Autowired
-	private EventTypeBusiness eventTypeBusiness;
+	private PortalBuilderBusiness portalBusiness;
 	
-
-	@GetMapping(produces = APPLICATION_JSON_UTF8_VALUE)
-	public GenericResponse<EventTypeResult> list() {
-		return new GenericResponse<EventTypeResult>(eventTypeBusiness.list());
+	@GetMapping(value = "/sidebar", produces = APPLICATION_JSON_UTF8_VALUE)
+	public GenericResponse<SidebarSchema> listWithCompetitions(){
+		return new GenericResponse<SidebarSchema>(portalBusiness.listWithCompetitions());
 	}
-	
+
 }

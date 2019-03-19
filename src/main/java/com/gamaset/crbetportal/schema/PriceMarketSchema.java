@@ -1,7 +1,11 @@
 package com.gamaset.crbetportal.schema;
 
-public class PriceMarketSchema {
+import java.io.Serializable;
 
+public class PriceMarketSchema implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private long selectionId;
 	private String selectionName;
 	private Double odd;
@@ -9,7 +13,7 @@ public class PriceMarketSchema {
 	public PriceMarketSchema() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public long getSelectionId() {
 		return selectionId;
 	}

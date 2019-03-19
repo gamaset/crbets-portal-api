@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gamaset.crbetportal.business.builder.MarketFilterBuilder;
+import com.gamaset.crbetportal.cache.component.CacheKeeper;
+import com.gamaset.crbetportal.endpoint.PeriodFilter;
 import com.gamaset.crbetportal.infra.configuration.ApiNgAccessKeysConfiguration;
 import com.gamaset.crbetportal.infra.exception.BusinessException;
 import com.gamaset.crbetportal.infra.log.LogEvent;
@@ -37,15 +39,19 @@ public class EventBusiness {
 	private CompetitionBusiness competitionBusiness;
 	private EventService eventService;
 	private ApiNgAccessKeysConfiguration accessKeysConfiguration;
+	private CacheKeeper cacheKeeper;
 
 	@Autowired
-	public EventBusiness(MarketFilterBuilder marketBuilder, CompetitionBusiness competitionBusiness, EventService eventService,
-			MarketService marketService, ApiNgAccessKeysConfiguration accessKeysConfiguration) {
+	public EventBusiness(MarketFilterBuilder marketBuilder, CompetitionBusiness competitionBusiness,
+			EventService eventService, MarketService marketService,
+			ApiNgAccessKeysConfiguration accessKeysConfiguration,
+			CacheKeeper cacheKeeper) {
 		this.competitionBusiness = competitionBusiness;
 		this.eventService = eventService;
 		this.accessKeysConfiguration = accessKeysConfiguration;
 		this.marketService = marketService;
 		this.marketBuilder = marketBuilder;
+		this.cacheKeeper = cacheKeeper;
 	}
 
 	public CompetitionEventsResponse listByEventTypeAndCompetitionId(Long eventTypeId, Long competitionId) {
@@ -53,29 +59,35 @@ public class EventBusiness {
 		CompetitionEventsResponse response = new CompetitionEventsResponse();
 		boolean marketTypeDefault = true;
 		TimeRange timeRange = null;
-		
+
 		try {
 
-			LOG_ACTION.info(create("Listando Eventos").add("eventTypeId", eventTypeId).add("competitionId", competitionId).build());
-			
+			LOG_ACTION.info(create("Listando Eventos").add("eventTypeId", eventTypeId)
+					.add("competitionId", competitionId).build());
+
 			response.setCompetition(competitionBusiness.getById(competitionId));
 
 			// BUSCANDO OS EVENTOS
-			MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder.filterEventsByEventTypeAndCompetition(eventTypeId, competitionId, marketTypeDefault, timeRange);
+			MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder
+					.filterEventsByEventTypeAndCompetition(eventTypeId, competitionId, marketTypeDefault, timeRange);
 			List<EventResult> listEventsResult = eventService.listEvents(filterEventsByEventTypeAndCompetition,
 					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.setEvents(convertToEventSchema(listEventsResult));
-			
+
 			// BUSCANDO O CATALOGO DE MERCADOS
-			MarketFilter filterMarketCatalogueByEvents = marketBuilder.filterMarketCatalogueByEvents(listEventsResult, marketTypeDefault);
-			List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(filterMarketCatalogueByEvents, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+			MarketFilter filterMarketCatalogueByEvents = marketBuilder.filterMarketCatalogueByEvents(listEventsResult,
+					marketTypeDefault);
+			List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(filterMarketCatalogueByEvents,
+					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.buildEventMarketCatalogue(listMarketCatalogue);
-			
-			//BUSCANDO ODDS PARA OS MERCADOS
-			MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue, marketTypeDefault);
-			List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+
+			// BUSCANDO ODDS PARA OS MERCADOS
+			MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue,
+					marketTypeDefault);
+			List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets,
+					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.buildEventMarketPrices(listMarketBook);
-			
+
 		} catch (BusinessException e) {
 			LOG_ERROR.info(create("Erro ao Listar Eventos").build());
 			throw e;
@@ -83,36 +95,39 @@ public class EventBusiness {
 
 		return response;
 	}
-	
+
 	public CompetitionEventsResponse getByEventId(Long eventTypeId, Long competitionId, Long eventId) {
 		CompetitionEventsResponse response = new CompetitionEventsResponse();
 		boolean marketTypeDefault = false;
 		TimeRange timeRange = null;
-		
+
 		try {
 
-			LOG_ACTION.info(create("Detalhando Evento").
-					add("eventTypeId", eventTypeId).
-					add("competitionId", competitionId).
-					add("eventId", eventId).
-					build());
-			
+			LOG_ACTION.info(create("Detalhando Evento").add("eventTypeId", eventTypeId)
+					.add("competitionId", competitionId).add("eventId", eventId).build());
+
 			// BUSCANDO OS EVENTOS
-			MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder.filterEventsByEventTypeAndCompetitionAndEvent(eventTypeId, competitionId, eventId, marketTypeDefault, timeRange);
+			MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder
+					.filterEventsByEventTypeAndCompetitionAndEvent(eventTypeId, competitionId, eventId,
+							marketTypeDefault, timeRange);
 			List<EventResult> listEventsResult = eventService.listEvents(filterEventsByEventTypeAndCompetition,
 					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.setEvents(convertToEventSchema(listEventsResult));
-			
+
 			// BUSCANDO O CATALOGO DE MERCADOS
-			MarketFilter filterMarketCatalogueByEvents = marketBuilder.filterMarketCatalogueByEvents(listEventsResult, marketTypeDefault);
-			List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(filterMarketCatalogueByEvents, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+			MarketFilter filterMarketCatalogueByEvents = marketBuilder.filterMarketCatalogueByEvents(listEventsResult,
+					marketTypeDefault);
+			List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(filterMarketCatalogueByEvents,
+					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.buildEventMarketCatalogue(listMarketCatalogue);
-			
-			//BUSCANDO ODDS PARA OS MERCADOS
-			MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue, marketTypeDefault);
-			List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+
+			// BUSCANDO ODDS PARA OS MERCADOS
+			MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue,
+					marketTypeDefault);
+			List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets,
+					accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 			response.buildEventMarketPrices(listMarketBook);
-			
+
 		} catch (BusinessException e) {
 			LOG_ERROR.info(create("Erro ao Listar Eventos").build());
 			throw e;
@@ -120,41 +135,65 @@ public class EventBusiness {
 
 		return response;
 	}
-	
-	public List<CompetitionEventsResponse> listFavoritesByEventType(Long eventTypeId) {
+
+	public List<CompetitionEventsResponse> listCachedFavoritesByEventType(Long eventTypeId, PeriodFilter period) {
+		List<CompetitionEventsResponse> response = cacheKeeper.getFavoriteEvents(eventTypeId, period);
 		
+		if(Objects.isNull(response)) {
+			response = listFavoritesByEventType(eventTypeId, period);
+			cacheKeeper.saveFavoriteEvents(eventTypeId, period, response);
+		}
+		
+		return response;
+	}
+
+	public List<CompetitionEventsResponse> listFavoritesByEventType(Long eventTypeId, PeriodFilter period) {
 		List<CompetitionEventsResponse> response = new ArrayList<CompetitionEventsResponse>();
 		boolean marketTypeDefault = true;
-		TimeRange timeRange = TimeRangeUtils.getToday();
+		TimeRange timeRange = TimeRangeUtils.getByPeriod(period);
 
 		try {
-			LOG_ACTION.info(create("Listando Eventos Favoritos").add("eventTypeId", eventTypeId).build());
-			
+			LOG_ACTION.info(create("Listando Eventos Favoritos").add("eventTypeId", eventTypeId).add("period", period).build());
+
 			List<CompetitionSchema> competitions = competitionBusiness.list(eventTypeId, timeRange);
-			
+
 			competitions.stream().forEach(c -> {
 				CompetitionEventsResponse ce = new CompetitionEventsResponse();
 				ce.setCompetition(c);
-				
+
+				LOG_ACTION.info(create(String.format("Competicao: %s - %s - %s", c.getEventType().getName(), c.getCountryCode(), c.getDescription())).build());
+
 				// BUSCANDO OS EVENTOS
-				MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder.filterEventsByEventTypeAndCompetition(eventTypeId, c.getId(), marketTypeDefault, timeRange);
+				MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder
+						.filterEventsByEventTypeAndCompetition(eventTypeId, c.getId(), marketTypeDefault, timeRange);
 				List<EventResult> listEventsResult = eventService.listEvents(filterEventsByEventTypeAndCompetition,
 						accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 				ce.setEvents(convertToEventSchema(listEventsResult));
-				
+
+				LOG_ACTION.info(create(String.format("Eventos Encontrados %s", listEventsResult.size())).build());
+
 				// BUSCANDO O CATALOGO DE MERCADOS
-				MarketFilter filterMarketCatalogueByEvents = marketBuilder.filterMarketCatalogueByEvents(listEventsResult, marketTypeDefault);
-				List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(filterMarketCatalogueByEvents, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+				MarketFilter filterMarketCatalogueByEvents = marketBuilder
+						.filterMarketCatalogueByEvents(listEventsResult, marketTypeDefault);
+				List<MarketCatalogue> listMarketCatalogue = marketService.listMarketCatalogue(
+						filterMarketCatalogueByEvents, accessKeysConfiguration.getAppKey(),
+						accessKeysConfiguration.getSsoToken());
 				ce.buildEventMarketCatalogue(listMarketCatalogue);
 				
-				//BUSCANDO ODDS PARA OS MERCADOS
-				MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue, marketTypeDefault);
-				List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets, accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
+				LOG_ACTION.info(create(String.format("Mercados Encontrados %s", listMarketCatalogue.size())).build());
+
+				// BUSCANDO ODDS PARA OS MERCADOS
+				MarketFilter filterMarketBookByMarkets = marketBuilder.filterMarketBookByMarkets(listMarketCatalogue,
+						marketTypeDefault);
+				List<MarketBook> listMarketBook = marketService.listMarketBooks(filterMarketBookByMarkets,
+						accessKeysConfiguration.getAppKey(), accessKeysConfiguration.getSsoToken());
 				ce.buildEventMarketPrices(listMarketBook);
 
 				response.add(ce);
+				
+				System.out.println("\n\n");
 			});
-			
+
 		} catch (BusinessException e) {
 			LOG_ERROR.info(create("Erro ao Listar Eventos Favoritos").build());
 			throw e;
@@ -162,7 +201,7 @@ public class EventBusiness {
 		
 		return response;
 	}
-	
+
 	private List<EventSchema> convertToEventSchema(List<EventResult> listEventsResult) {
 		List<EventSchema> events = new ArrayList<EventSchema>();
 
@@ -174,6 +213,5 @@ public class EventBusiness {
 
 		return events;
 	}
-
 
 }

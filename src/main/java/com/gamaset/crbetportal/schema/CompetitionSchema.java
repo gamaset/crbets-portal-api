@@ -1,27 +1,32 @@
 package com.gamaset.crbetportal.schema;
 
+import java.io.Serializable;
+
 import com.gamaset.crbetportal.integration.betfair.aping.entities.CompetitionResult;
 import com.gamaset.crbetportal.repository.entity.CompetitionModel;
 import com.gamaset.crbetportal.repository.entity.EventTypeModel;
 
-public class CompetitionSchema {
+public class CompetitionSchema implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Long id;
 	private String description;
 	private String countryCode;
 	private EventTypeModel eventType;
 	private boolean active;
+	private int count;
 
 	public CompetitionSchema() {
 	}
-	
+
 	public CompetitionSchema(CompetitionModel model) {
 		setId(model.getId());
 		setDescription(model.getDescription());
 		setCountryCode(model.getCountryCode());
 		setEventType(model.getEventType());
 		setActive(model.isActive());
-		
+
 	}
 
 	public CompetitionSchema(CompetitionResult c, EventTypeModel eventType) {
@@ -30,6 +35,7 @@ public class CompetitionSchema {
 		setCountryCode(c.getCompetitionRegion());
 		setEventType(eventType);
 		setActive(true);
+		setCount(c.getMarketCount());
 	}
 
 	public Long getId() {
@@ -71,5 +77,13 @@ public class CompetitionSchema {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
 }
