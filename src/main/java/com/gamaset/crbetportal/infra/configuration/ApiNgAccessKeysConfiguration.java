@@ -10,7 +10,7 @@ public class ApiNgAccessKeysConfiguration {
 	
 	public ApiNgAccessKeysConfiguration() {
 		this.appKey = "Szx1FGThmaNmSz9U";
-		this.ssoToken = "PCF5/wiFEb+1u0hbzI6KivmW/UfPGtbWKfWpbdphWOI=";
+		this.ssoToken = "9KddiEkLe2lYiRISbxt+TbTajKgRiMvbuuJuHm/Z2v0=";
 	}
 	
 	public String getAppKey() {

@@ -52,7 +52,7 @@ public class PortalBuilderBusiness {
 
 	public List<SidebarSchema> listWithCompetitions() {
 
-		PeriodFilter period = PeriodFilter.NEXT_3_DAYS;
+		PeriodFilter period = PeriodFilter.TODAY;
 		List<SidebarSchema> response = null;
 
 		try {
