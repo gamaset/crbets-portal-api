@@ -106,6 +106,8 @@ public class EventBusiness {
 			LOG_ACTION.info(create("Detalhando Evento").add("eventTypeId", eventTypeId)
 					.add("competitionId", competitionId).add("eventId", eventId).build());
 
+			response.setCompetition(competitionBusiness.getById(competitionId));
+
 			// BUSCANDO OS EVENTOS
 			MarketFilter filterEventsByEventTypeAndCompetition = marketBuilder
 					.filterEventsByEventTypeAndCompetitionAndEvent(eventTypeId, competitionId, eventId,
